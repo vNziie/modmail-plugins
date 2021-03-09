@@ -13,7 +13,7 @@ from core.models import PermissionLevel
 
 class WarnPlugin(commands.Cog):
     """
-    Moderate ya server using modmail pog
+    Moderate your server using modmail
     """
 
     def __init__(self, bot):
@@ -31,7 +31,7 @@ class WarnPlugin(commands.Cog):
         return
 
     @moderation.command()
-    @checks.has_permissions(PermissionLevel.ADMIN)
+    @checks.has_permissions(PermissionLevel.OWNER)
     async def channel(self, ctx: commands.Context, channel: discord.TextChannel):
         """
         Set the log channel for moderation actions.
@@ -41,10 +41,10 @@ class WarnPlugin(commands.Cog):
             {"_id": "config"}, {"$set": {"channel": channel.id}}, upsert=True
         )
 
-        await ctx.send("Done!")
+        await ctx.send("Done! 📁")
         return
 
-    @commands.command()
+    @commands.command(aliases=["w"])
     @checks.has_permissions(PermissionLevel.MODERATOR)
     async def warn(self, ctx, member: discord.Member, *, reason: str):
         """Warn a member.
@@ -53,7 +53,7 @@ class WarnPlugin(commands.Cog):
         """
 
         if member.bot:
-            return await ctx.send("Bots can't be warned.")
+            return await ctx.send("Bots can't be warned! ❌")
 
         channel_config = await self.db.find_one({"_id": "config"})
 
@@ -86,7 +86,7 @@ class WarnPlugin(commands.Cog):
             {"_id": "warns"}, {"$set": {str(member.id): userw}}, upsert=True
         )
 
-        await ctx.send(f"Successfully warned **{member}**\n`{reason}`")
+        await ctx.send(f"Successfully warned **{member}**\n`{reason}` ⚠️")
 
         await channel.send(
             embed=await self.generateWarnEmbed(
@@ -96,8 +96,8 @@ class WarnPlugin(commands.Cog):
         del userw
         return
 
-    @commands.command()
-    @checks.has_permissions(PermissionLevel.MODERATOR)
+    @commands.command(aliases=["dw", "delwarn", "removewarn", "rw"])
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def pardon(self, ctx, member: discord.Member, *, reason: str):
         """Remove all warnings of a  member.
         Usage:
@@ -105,12 +105,12 @@ class WarnPlugin(commands.Cog):
         """
 
         if member.bot:
-            return await ctx.send("Bots can't be warned, so they can't be pardoned.")
+            return await ctx.send("Bots can't be warned, so they can't be pardoned! ❌")
 
         channel_config = await self.db.find_one({"_id": "config"})
 
         if channel_config is None:
-            return await ctx.send("There's no configured log channel.")
+            return await ctx.send("There's no configured log channel. ❌")
         else:
             channel = ctx.guild.get_channel(int(channel_config["channel"]))
 
@@ -125,7 +125,7 @@ class WarnPlugin(commands.Cog):
         try:
             userwarns = config[str(member.id)]
         except KeyError:
-            return await ctx.send(f"{member} doesn't have any warnings.")
+            return await ctx.send(f"{member} doesn't have any warnings. ⚠️")
 
         if userwarns is None:
             await ctx.send(f"{member} doesn't have any warnings.")
@@ -134,9 +134,9 @@ class WarnPlugin(commands.Cog):
             {"_id": "warns"}, {"$set": {str(member.id): []}}
         )
 
-        await ctx.send(f"Successfully pardoned **{member}**\n`{reason}`")
+        await ctx.send(f"Successfully pardoned **{member}**\n`{reason}` ⚠️")
 
-        embed = discord.Embed(color=discord.Color.blue())
+        embed = discord.Embed(color=discord.Color.random())
 
         embed.set_author(
             name=f"Pardon | {member}",
@@ -156,7 +156,7 @@ class WarnPlugin(commands.Cog):
         member: discord.User = await self.bot.fetch_user(int(memberid))
         mod: discord.User = await self.bot.fetch_user(int(modid))
 
-        embed = discord.Embed(color=discord.Color.red())
+        embed = discord.Embed(color=discord.Color.random())
 
         embed.set_author(
             name=f"Warn | {member}",
