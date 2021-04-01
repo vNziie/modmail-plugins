@@ -22,14 +22,14 @@ class Polls(commands.Cog):
     @commands.group(name="poll", invoke_without_command=True)
     @checks.has_permissions(PermissionLevel.MODERATOR)
     async def poll(self, ctx: commands.Context):
-        """Easily create Polls."""
+        """📊 Easily create Polls."""
         await ctx.send_help(ctx.command)
 
     @poll.command()
     @commands.guild_only()
     @checks.has_permissions(PermissionLevel.MODERATOR)
     async def start(self, ctx, *, question):
-        """Interactively creates a poll with the following question.
+        """📊 Interactively creates a poll with the following question.
 
         To vote, use reactions!
         """
@@ -79,6 +79,7 @@ class Polls(commands.Cog):
             description=f"**{question}**\n{answer}",
         )
         embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+        embed.set_footer(text="Thanks for voting!", icon_url=guild.icon_url)
         poll = await ctx.send(embed=embed)
         for emoji, _ in answers:
             await poll.add_reaction(emoji)
@@ -90,9 +91,9 @@ class Polls(commands.Cog):
 
     @poll.command()
     @commands.guild_only()
-    @checks.has_permissions(PermissionLevel.MODERATOR)
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def quick(self, ctx, *questions_and_choices: str):
-        """Makes a poll quickly.
+        """📊 Makes a poll quickly.
         The first argument is the question and the rest are the choices.
         for example: `?poll quick "Green or Light Green?" Green "Light Green"`
 
@@ -122,7 +123,7 @@ class Polls(commands.Cog):
             )
             embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
             poll = await ctx.send(embed=embed)
-            reactions = ["👍", "👎"]
+            reactions = ["✅", "➖", "❌"]
             for emoji in reactions:
                 await poll.add_reaction(emoji)
 
