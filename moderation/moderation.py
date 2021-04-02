@@ -13,7 +13,7 @@ from core.models import PermissionLevel
 
 class ModerationPlugin(commands.Cog):
     """
-    Moderate ya server using modmail pog
+    🔨 Moderate ya server using modmail pog
     """
 
     def __init__(self, bot):
